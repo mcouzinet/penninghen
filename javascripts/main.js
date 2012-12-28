@@ -7,6 +7,7 @@ $(function(){
       data,
       sum,
       x,
+      camFeed,
       canvasCarre = $('#canvasCarre'),
       tabCarre = new Array(),
       max = 2000,
@@ -32,8 +33,8 @@ $(function(){
       }
 
     function onStream(stream) {
-
-      document.getElementById('camFeed').src = webkitURL.createObjectURL(stream);
+      camFeed = document.getElementById('camFeed');
+      camFeed.src = webkitURL.createObjectURL(stream);
 
       context = new webkitAudioContext();
       microphone = context.createMediaStreamSource(stream);
@@ -43,7 +44,7 @@ $(function(){
       microphone.connect(analyser);
       analyser.connect(jsProcessor);
       jsProcessor.connect(context.destination);
-      window.setInterval(update, 400);
+      window.setInterval(update, 1000 / 24);
       jsProcessor.onaudioprocess = function(e){
       data = new Uint8Array(10);
         analyser.getByteFrequencyData(data);
@@ -60,6 +61,8 @@ $(function(){
     function update() {
 
       contextCanvas.clearRect(0, 0, 800, 600);
+
+      contextCanvas.drawImage(camFeed, 0, 0, 800, 600);
 
       sum = data[0]+data[1]+data[2]+data[3]+data[4]+data[5]+data[6]+data[7]+data[8]+data[9];
 
