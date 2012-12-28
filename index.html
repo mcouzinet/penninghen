@@ -1,53 +1,122 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html>
+  <head>
+    <title>Test Penninghen #1</title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 
-    <head>
-        <title>webRTC Test</title>
-    </head>
+    <style type="text/css">
+      #canvasCarre{position:fixed;top:0;left:0;z-index:2;}
+      #camFeed{position:fixed;top:0;left:0;z-index:1;}
 
-    <script type="text/javascript">
-      
-      function init()
-      {
-          if(navigator.webkitGetUserMedia)
-          {
-              navigator.webkitGetUserMedia({video:true}, onSuccess, onFail);
-          }
-          else
-          {
-              alert('webRTC not available');
-          }
+    </style>
+  </head>
+
+  <body>
+
+    <canvas id="canvasCarre" width="800px" height="600px"></canvas>
+    <video id="camFeed" width="800px" height="600px" autoplay>
+
+    <script>
+    
+
+    $(function(){
+
+    var analyser, 
+      context,
+      jsProcessor,
+      microphone,
+      data,
+      sum,
+      x,
+      canvasCarre = $('#canvasCarre'),
+      tabCarre = new Array(),
+      max = 2000,
+      contextCanvas = canvasCarre[0].getContext('2d')
+      //height = $(window).height()
+      height = 600,
+      //width = $(window).width();
+      width = 800,
+      test = 1;
+
+    navigator.webkitGetUserMedia({audio:true,video:true}, onStream, onError);
+
+    //canvasCarre.height(height);
+    //canvasCarre.width(width);
+
+    function randomize(arr) {
+  
+        arr.sort(function() { 
+          return 0.5 - Math.random();
+        });
+        return arr;  
+    
       }
-          
-      function onSuccess(stream)
-      {
-          document.getElementById('camFeed').src = webkitURL.createObjectURL(stream);
+
+    function onStream(stream) {
+
+
+      document.getElementById('camFeed').src = webkitURL.createObjectURL(stream);
+
+      context = new webkitAudioContext();
+      microphone = context.createMediaStreamSource(stream);
+      analyser = context.createAnalyser();
+      jsProcessor = context.createJavaScriptNode(1024,1,1);
+
+      microphone.connect(analyser);
+      analyser.connect(jsProcessor);
+      jsProcessor.connect(context.destination);
+      window.setInterval(update, 400);
+      jsProcessor.onaudioprocess = function(e){
+      data = new Uint8Array(10);
+        analyser.getByteFrequencyData(data);
       }
-          
-      function onFail()
-      {
-          alert('could not connect stream');
+
+    }
+
+
+    
+
+    function onError(err) {
+
+      console.log('On a un problème !');
+
+    }
+
+    function update() {
+
+
+      contextCanvas.clearRect(0, 0, 800, 600);
+
+
+      sum = data[0]+data[1]+data[2]+data[3]+data[4]+data[5]+data[6]+data[7]+data[8]+data[9];
+
+      x = 160 * (sum-300) / max;
+
+      for(var k = 0; k < 160 ; k++){
+        tabCarre[k] = (k > x) ? 0 : 1 ;
       }
+      tabCarre = randomize(tabCarre);
+
+      var canH = 60;
+      var canW = 50;
+      contextCanvas.fillStyle="white";
+
+      for(var k = 0; k < 160 ; k++){
+
+        var ligne = Math.floor( k / 10 );
+        if(tabCarre[k] == 0){
+
+          contextCanvas.fillRect( ligne * canW, (canH * k)-(ligne*canH*10) ,canW,canH);
+        }
+
+      }
+
+    }
+
+      });
 
     </script>
 
-    <body onload="init();" style="background-color:#ababab;" >
-        <div style="width:1200px; height:840px; margin:0 auto; background-color:#fff;" >
-            <div>
-              <video id="camFeed" width="1200px" height="840px" autoplay>
-            </video>
-          </div>
-
-            <div>
-                <canvas id="photo" width="320" height="240">
-                </canvas>
-            </div>
-
-            <div style="margin:0 auto; width:82px;">
-                <input type="button" value="Take Photo" onclick="takePhoto();">
-            </div>
-        </div>
-
-    </body>
+  </body>
 </html>
+
