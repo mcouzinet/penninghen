@@ -272,7 +272,7 @@ Full-Width Styles
 
 .inner {
   position: relative;
-  max-width: 640px;
+  max-width: 800px;
   padding: 20px 10px;
   margin: 0 auto;
 }
@@ -368,6 +368,22 @@ Full-Width Styles
 
 #main_content {
   padding-top: 40px;
+  position:relative;
+  height:600px;
+}
+
+#canvasCarre {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index:2;
+}
+
+#camFeed {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index:1;
 }
 
 #footer_wrap {
