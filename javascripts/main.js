@@ -24,13 +24,11 @@ $(function(){
     //canvasCarre.width(width);
 
     function randomize(arr) {
-  
-        arr.sort(function() { 
-          return 0.5 - Math.random();
-        });
-        return arr;  
-    
-      }
+      arr.sort(function() { 
+        return 0.5 - Math.random();
+      });
+      return arr;
+    }
 
     function onStream(stream) {
       camFeed = document.getElementById('camFeed');
@@ -44,7 +42,7 @@ $(function(){
       microphone.connect(analyser);
       analyser.connect(jsProcessor);
       jsProcessor.connect(context.destination);
-      window.setInterval(update, 1000 / 24);
+      window.setInterval(update, 1000 / 18);
       jsProcessor.onaudioprocess = function(e){
       data = new Uint8Array(10);
         analyser.getByteFrequencyData(data);
@@ -66,7 +64,7 @@ $(function(){
 
       sum = data[0]+data[1]+data[2]+data[3]+data[4]+data[5]+data[6]+data[7]+data[8]+data[9];
 
-      x = 160 * (sum-300) / max;
+      x = 250 * (sum-600) / max;
 
       for(var k = 0; k < 160 ; k++){
         tabCarre[k] = (k > x) ? 0 : 1 ;
