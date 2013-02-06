@@ -1,5 +1,4 @@
 $(function(){
-
     var analyser, 
       context,
       jsProcessor,
@@ -10,7 +9,7 @@ $(function(){
       camFeed,
       canvasCarre = $('#canvasCarre'),
       tabCarre = new Array(),
-      max = 2000,
+      max = 3000,
       contextCanvas = canvasCarre[0].getContext('2d')
       //height = $(window).height()
       height = 600,
@@ -19,7 +18,6 @@ $(function(){
       test = 1;
 
     navigator.webkitGetUserMedia({audio:true,video:true}, onStream, onError);
-
     //canvasCarre.height(height);
     //canvasCarre.width(width);
 
@@ -27,7 +25,7 @@ $(function(){
       arr.sort(function() { 
         return 0.5 - Math.random();
       });
-      return arr;
+      return arr;  
     }
 
     function onStream(stream) {
@@ -42,30 +40,23 @@ $(function(){
       microphone.connect(analyser);
       analyser.connect(jsProcessor);
       jsProcessor.connect(context.destination);
-      window.setInterval(update, 1000 / 18);
+      window.setInterval(update, 1000 / 12);
       jsProcessor.onaudioprocess = function(e){
       data = new Uint8Array(10);
         analyser.getByteFrequencyData(data);
       }
-
     }
 
     function onError(err) {
-
       console.log('On a un problème !');
-
     }
 
     function update() {
-
       contextCanvas.clearRect(0, 0, 800, 600);
-
       contextCanvas.drawImage(camFeed, 0, 0, 800, 600);
-
       sum = data[0]+data[1]+data[2]+data[3]+data[4]+data[5]+data[6]+data[7]+data[8]+data[9];
-
-      x = 250 * (sum-600) / max;
-
+      x = 275 * (sum-500) / max;
+      console.log(x);
       for(var k = 0; k < 160 ; k++){
         tabCarre[k] = (k > x) ? 0 : 1 ;
       }
@@ -82,9 +73,6 @@ $(function(){
 
           contextCanvas.fillRect( ligne * canW, (canH * k)-(ligne*canH*10) ,canW,canH);
         }
-
       }
-
     }
-
 });
